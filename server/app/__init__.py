@@ -19,10 +19,8 @@ def create_app(config_object=None):
 
    # Allow requests from the Vite frontend (adjust origin if needed)
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
-    # Support multiple origins (comma-separated) or single origin
-    allowed_origins = [origin.strip() for origin in frontend_url.split(",")] if frontend_url else ["http://localhost:5173"]
 
-    CORS(app, origins=allowed_origins, supports_credentials=True)
+    CORS(app, origins=[frontend_url], supports_credentials=True)
     # Initialize extensions
     mongo.init_app(app)  # if using PyMongo
 
