@@ -27,7 +27,7 @@ Tasks:
 
     # Call Replicate model
     output = client.run(
-        "openai/gpt-4.1",  # Replace with your chosen model
+        "mistralai/mistral-7b-instruct:latest",  # Replace with your chosen model
         input={
             "input": prompt,
             "temperature": 0,
