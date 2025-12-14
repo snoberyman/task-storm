@@ -50,7 +50,14 @@ export default function App() {
 
   const deleteTask = async (id: string) => {
     await client.request(DELETE_TASK, { id });
-    fetchTasks();
+    try {
+      const data = await client.request(AUTO_PRIORITIZE_TASKS);
+      setTasks(data.autoPrioritizeTasks);
+    } catch (err) {
+      console.error("Failed to auto-prioritize tasks:", err);
+      // Fallback to regular fetch if auto-prioritize fails
+      fetchTasks();
+    }
   };
 
   return (

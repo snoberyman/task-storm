@@ -4,7 +4,7 @@ from .extensions import mongo  # or db if using SQLAlchemy
 # from app.routes.tasks_graphql import tasks_bp
 from .graphql.tasks_graphql import tasks_bp
 from flask_cors import CORS
-
+import os
 
 def create_app(config_object=None):
     # Enable instance folder and load instance/config.py
