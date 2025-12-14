@@ -1,32 +1,27 @@
 # app/__init__.py
-from flask import Flask, app, request
-from .extensions import mongo  # or db if using SQLAlchemy
-# from app.routes.tasks_graphql import tasks_bp
+from flask import Flask, request
+from .extensions import mongo
 from .graphql.tasks_graphql import tasks_bp
 from flask_cors import CORS
 import os
 
 def create_app(config_object=None):
-    # Enable instance folder and load instance/config.py
     app = Flask(__name__, instance_relative_config=True)
 
-    # Load config: either from argument, or from instance/config.py
-    app.config.from_object(config_object)
-    # if config_object:
-        
-    # else:
-    #     app.config.from_pyfile("config.py")  # loads instance/config.py
+    # Load config
+    if config_object:
+        app.config.from_object(config_object)
 
-   # Allow requests from the Vite frontend (adjust origin if needed)
+    # Allow requests from frontend
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
-
     CORS(app, origins=[frontend_url], supports_credentials=True)
-    # Initialize extensions
-    mongo.init_app(app)  # if using PyMongo
 
-    # app.register_blueprint(tasks_bp)
-    app.register_blueprint(tasks_bp)
-    
+    # Initialize extensions
+    mongo.init_app(app)
+
+    # Register blueprints
+    app.register_blueprint(tasks_bp, url_prefix="/graphql")
+
     @app.before_request
     def before_any_request():
         print("Before request:", request.path)
@@ -35,6 +30,5 @@ def create_app(config_object=None):
     def after_any_request(response):
         print("After request:", request.path)
         return response
-    
 
     return app
