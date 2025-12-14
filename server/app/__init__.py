@@ -27,6 +27,14 @@ def create_app(config_object=None):
             print("ERROR: MONGO_URL or MONGO_URI environment variable is not set.")
             raise ValueError("MONGO_URL or MONGO_URI environment variable is required")
 
+        with app.app_context():
+            # Create 'tasks' collection if it doesn't exist
+            if "tasks" not in mongo.db.list_collection_names():
+                mongo.db.create_collection("tasks")
+                print("Created 'tasks' collection")
+            else:
+                print("'tasks' collection already exists")
+                
     # Allow requests from frontend
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
     CORS(
