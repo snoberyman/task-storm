@@ -61,6 +61,8 @@ mutation = MutationType()
 # --- Query Resolvers ---
 @query.field("tasks")
 def resolve_tasks(_, info):
+    if mongo.db is None:
+        raise Exception("MongoDB connection not initialized. Please check DATABASE_URL environment variable.")
     tasks = list(mongo.db.tasks.find())
     for t in tasks:
         t["id"] = str(t["_id"])
@@ -68,6 +70,8 @@ def resolve_tasks(_, info):
 
 @query.field("task")
 def resolve_task(_, info, id):
+    if mongo.db is None:
+        raise Exception("MongoDB connection not initialized. Please check DATABASE_URL environment variable.")
     task = mongo.db.tasks.find_one({"_id": ObjectId(id)})
     if not task:
         return None
@@ -77,6 +81,8 @@ def resolve_task(_, info, id):
 # --- Mutation Resolvers ---
 @mutation.field("createTask")
 def resolve_create_task(_, info, title, description="", tags=None, priority="LOW"):
+    if mongo.db is None:
+        raise Exception("MongoDB connection not initialized. Please check DATABASE_URL environment variable.")
     task = {
         "title": title,
         "description": description,
@@ -91,6 +97,8 @@ def resolve_create_task(_, info, title, description="", tags=None, priority="LOW
 
 @mutation.field("updateTask")
 def resolve_update_task(_, info, id, title=None, description=None, completed=None, tags=None, priority=None):
+    if mongo.db is None:
+        raise Exception("MongoDB connection not initialized. Please check DATABASE_URL environment variable.")
     updates = {}
 
     if title is not None:
@@ -115,6 +123,8 @@ def resolve_update_task(_, info, id, title=None, description=None, completed=Non
 
 @mutation.field("deleteTask")
 def resolve_delete_task(_, info, id):
+    if mongo.db is None:
+        raise Exception("MongoDB connection not initialized. Please check DATABASE_URL environment variable.")
     mongo.db.tasks.delete_one({"_id": ObjectId(id)})
     return "Task deleted"
 
@@ -124,6 +134,8 @@ def resolve_auto_prioritize(_, info):
     Fetch all tasks, send to local Mistral model, update priorities in DB,
     and return updated tasks.
     """
+    if mongo.db is None:
+        raise Exception("MongoDB connection not initialized. Please check DATABASE_URL environment variable.")
     # 1️⃣ Fetch tasks from DB
     tasks = list(mongo.db.tasks.find())
     for t in tasks:
