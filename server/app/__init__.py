@@ -16,6 +16,7 @@ def create_app(config_object=None):
     if "MONGO_URI" not in app.config:
         mongo_uri = os.getenv("DATABASE_URL")
         if mongo_uri:
+            print(f"Using DATABASE_URL for MONGO_URI: {mongo_uri}")
             # Add database name if not present
             mongo_uri = mongo_uri.rstrip("/")
             if mongo_uri.count("/") <= 2:  # No database name in URI
