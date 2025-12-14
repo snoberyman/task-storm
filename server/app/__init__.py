@@ -24,6 +24,7 @@ def create_app(config_object=None):
                 mongo_uri = mongo_uri + "/" + db_name
             app.config["MONGO_URI"] = mongo_uri
         else:
+            print("ERROR: DATABASE_URL environment variable is not set.")
             raise ValueError("DATABASE_URL environment variable is required")
 
     # Allow requests from frontend
