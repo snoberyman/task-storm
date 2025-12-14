@@ -1,0 +1,6 @@
+flask==3.0.3
+requests==2.31.0
+python-dotenv
+flask_pymongo
+flask-cors
+ariadne 

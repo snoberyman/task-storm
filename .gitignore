@@ -1,0 +1,23 @@
+# Env
+.env
+.env.*
+!.env.example
+
+# Python
+vnv/
+.venv/
+__pycache__/
+
+# Node
+node_modules/
+
+# Builds
+dist/
+build/
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
