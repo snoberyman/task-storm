@@ -18,7 +18,9 @@ def create_app(config_object=None):
     #     app.config.from_pyfile("config.py")  # loads instance/config.py
 
    # Allow requests from the Vite frontend (adjust origin if needed)
-    CORS(app, origins=["http://localhost:5173"])
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+    CORS(app, origins=[frontend_url], supports_credentials=True)
     # Initialize extensions
     mongo.init_app(app)  # if using PyMongo
 
