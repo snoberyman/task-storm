@@ -1,9 +1,10 @@
-// src/lib/graphqlClient.ts
 import { GraphQLClient } from "graphql-request";
 
-export const client = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
-  headers: {
-    // Add any auth headers if needed, e.g.,
-    // Authorization: `Bearer ${token}`,
-  },
-});
+const url = import.meta.env.VITE_GRAPHQL_URL;
+if (!url) {
+  throw new Error(
+    "VITE_GRAPHQL_URL is not defined. Check your .env file or Netlify env vars."
+  );
+}
+
+export const client = new GraphQLClient(url);
