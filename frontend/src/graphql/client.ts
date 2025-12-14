@@ -1,4 +1,9 @@
+// src/lib/graphqlClient.ts
 import { GraphQLClient } from "graphql-request";
 
-// Adjust this to your backend URL
-export const client = new GraphQLClient("http://localhost:8000/graphql");
+export const client = new GraphQLClient(import.meta.env.VITE_GRAPHQL_URL, {
+  headers: {
+    // Add any auth headers if needed, e.g.,
+    // Authorization: `Bearer ${token}`,
+  },
+});
