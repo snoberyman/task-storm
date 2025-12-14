@@ -14,9 +14,9 @@ def create_app(config_object=None):
     
     # Ensure MONGO_URI is set (Flask-PyMongo requires this)
     if "MONGO_URI" not in app.config or not app.config.get("MONGO_URI"):
-        mongo_uri = os.getenv("MONGO_PUBLIC_URL") or os.getenv("MONGO_URI")
+        mongo_uri = os.getenv("MONGO_URL") or os.getenv("MONGO_URI")
         if mongo_uri:
-            print(f"Using MONGO_PUBLIC_URL for MONGO_URI: {mongo_uri}")
+            print(f"Using MONGO_URL for MONGO_URI: {mongo_uri}")
             # Add database name if not present
             mongo_uri = mongo_uri.rstrip("/")
             if mongo_uri.count("/") <= 2:  # No database name in URI
@@ -24,8 +24,8 @@ def create_app(config_object=None):
                 mongo_uri = mongo_uri + "/" + db_name
             app.config["MONGO_URI"] = mongo_uri
         else:
-            print("ERROR: MONGO_PUBLIC_URL or MONGO_URI environment variable is not set.")
-            raise ValueError("MONGO_PUBLIC_URL or MONGO_URI environment variable is required")
+            print("ERROR: MONGO_URL or MONGO_URI environment variable is not set.")
+            raise ValueError("MONGO_URL or MONGO_URI environment variable is required")
 
     # Allow requests from frontend
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
