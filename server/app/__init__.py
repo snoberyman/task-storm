@@ -14,7 +14,13 @@ def create_app(config_object=None):
 
     # Allow requests from frontend
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
-    CORS(app, origins=[frontend_url], supports_credentials=True)
+    CORS(
+    app,
+    origins=[frontend_url],
+    supports_credentials=True,
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"]
+    )
 
     # Initialize extensions
     mongo.init_app(app)
