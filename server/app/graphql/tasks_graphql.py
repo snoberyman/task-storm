@@ -61,8 +61,18 @@ mutation = MutationType()
 # --- Query Resolvers ---
 @query.field("tasks")
 def resolve_tasks(_, info):
-    if mongo.db is None:
-        raise Exception("MongoDB connection not initialized. Please check DATABASE_URL environment variable.")
+    # Flask-PyMongo uses lazy connection, so mongo.db might be None until first access
+    # Try to access it, which will trigger the connection
+    try:
+        db = mongo.db
+        if db is None:
+            raise Exception("MongoDB connection not initialized. Please check DATABASE_URL environment variable.")
+    except Exception as e:
+        # If accessing mongo.db raises an exception, it's a connection error
+        error_msg = f"MongoDB connection error: {str(e)}. Please check DATABASE_URL environment variable."
+        print(f"ERROR: {error_msg}")
+        raise Exception(error_msg)
+    
     tasks = list(mongo.db.tasks.find())
     for t in tasks:
         t["id"] = str(t["_id"])
