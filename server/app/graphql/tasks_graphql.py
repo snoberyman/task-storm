@@ -61,6 +61,8 @@ mutation = MutationType()
 # --- Query Resolvers ---
 @query.field("tasks")
 def resolve_tasks(_, info):
+    if mongo.db is None:
+        raise Exception("MongoDB connection failed. mongo.db is None. Please check DATABASE_URL and MongoDB connection.")
     tasks = list(mongo.db.tasks.find())
     for t in tasks:
         t["id"] = str(t["_id"])

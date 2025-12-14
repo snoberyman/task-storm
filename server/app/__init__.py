@@ -39,6 +39,20 @@ def create_app(config_object=None):
 
     # Initialize extensions
     mongo.init_app(app)
+    
+    # Debug: Check if MONGO_URI is set correctly
+    print(f"MONGO_URI in config: {app.config.get('MONGO_URI', 'NOT SET')}")
+    
+    # Try to verify connection works
+    try:
+        with app.app_context():
+            db = mongo.db
+            if db:
+                print(f"MongoDB connected. Database: {db.name}")
+            else:
+                print("WARNING: mongo.db is None after initialization")
+    except Exception as e:
+        print(f"WARNING: Could not verify MongoDB connection: {e}")
 
     # Register blueprints (blueprint already has url_prefix="/graphql", so don't add it again)
     app.register_blueprint(tasks_bp)
