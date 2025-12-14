@@ -2,7 +2,7 @@ import os
 
 class Config:
     SECRET_KEY = os.environ["SECRET_KEY"]  # will raise KeyError if missing
-    MONGO_URI = os.environ["DATABASE_URL"]  # no default, must exist
+    MONGO_URI = os.environ.get("MONGO_URI")  # no default, must exist
     DEBUG = False
 
 class DevelopmentConfig(Config):
