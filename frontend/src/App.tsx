@@ -14,8 +14,13 @@ export default function App() {
   const [tasks, setTasks] = useState([]);
 
   const fetchTasks = async () => {
-    const data = await client.request(GET_TASKS);
-    setTasks(data.tasks);
+    try {
+      const data = await client.request(GET_TASKS);
+      console.log("Fetched tasks:", data);
+      setTasks(data.tasks);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
   };
 
   useEffect(() => {
