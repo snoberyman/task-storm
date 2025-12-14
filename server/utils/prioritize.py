@@ -26,25 +26,27 @@ Tasks:
 """
 
     # Call Replicate model
-    output = client.run(
-        "mistralai/mistral-7b-instruct:latest",  # Replace with your chosen model
-        input={
-            "input": prompt,
-            "temperature": 0,
-            "max_output_tokens": 300
-        }
-    )
+    input = {
+        "top_p": 0.9,
+        "prompt": prompt,
+        "temperature": 0.6,
+    }
 
-    # Replicate often returns a string or list
-    text = output if isinstance(output, str) else output[0]
-    text = text.strip()
+    for event in replicate.stream(
+        "meta/meta-llama-3-70b-instruct",
+        input=input
+    ):
+
+        # Replicate often returns a string or list
+        print(event, end="")
+        event = event if isinstance(event, str) else event[0]
+        event = event.strip()
 
     # Extract JSON array from model output
     try:
-        start_idx = text.index("[")
-        json_string = text[start_idx:]
+        start_idx = event.index("[")
+        json_string = event[start_idx:]
         priorities = json.loads(json_string)
     except Exception as e:
-        raise ValueError(f"Failed to parse JSON from model output: {e}\nOutput was:\n{text}")
-
+        raise ValueError(f"Failed to parse JSON from model output: {e}\nOutput was:\n{event}")
     return priorities
