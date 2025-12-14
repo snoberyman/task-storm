@@ -22,37 +22,33 @@ Tasks:
 {json.dumps(tasks, indent=2)}
 """
 
-    input = {
-        "top_p": 0.9,
-        "temperature": 0.3,
-        "prompt": prompt,
-        "prompt_template": (
-            "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n"
-            "You are a helpful assistant\n"
-            "<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n"
-            "{prompt}"
-            "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-        ),
-    }
+    output = replicate.run(
+        "meta/meta-llama-3-8b-instruct",
+        input={
+            "prompt": prompt,
+            "temperature": 0.3,
+            "top_p": 0.9,
+            "prompt_template": (
+                "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n"
+                "You are a helpful assistant\n"
+                "<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n"
+                "{prompt}"
+                "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+            ),
+        }
+    )
 
-    output_text = ""
+    # Replicate may return list or string
+    if isinstance(output, list):
+        output_text = "".join(output)
+    else:
+        output_text = str(output)
 
-    for event in replicate.stream(
-        "meta/meta-llama-3-8b-instruct",  # ✅ correct model
-        input=input
-    ):
-        if isinstance(event, str):
-            output_text += event
-        elif isinstance(event, list):
-            output_text += event[0]
-
-    # Extract JSON safely
     try:
         start = output_text.index("[")
         end = output_text.rindex("]") + 1
-        json_string = output_text[start:end]
-        return json.loads(json_string)
+        return json.loads(output_text[start:end])
     except Exception as e:
         raise ValueError(
-            f"Failed to parse JSON.\nOutput:\n{output_text}"
+            f"Failed to parse JSON.\nOutput was:\n{output_text}"
         ) from e
