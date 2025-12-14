@@ -1,5 +1,9 @@
-import requests
+import replicate
 import json
+import os
+
+# Create client using environment variable
+client = replicate.Client(api_token=os.environ["REPLICATE_API_TOKEN"])
 
 def prioritize_tasks(tasks):
     prompt = f"""
@@ -13,7 +17,7 @@ Rules:
 Output must be a single JSON array like this one:
 [
   {{ "id": "1", "priority": "HIGH" }},
-  {{ "id": "2", "priority": "MEDIUM" }}
+  {{ "id": "2", "priority": "MEDIUM" }},
   {{ "id": "3", "priority": "LOW" }}
 ]
 
@@ -21,37 +25,26 @@ Tasks:
 {json.dumps(tasks, indent=2)}
 """
 
-    response = requests.post(
-        "http://127.0.0.1:5000/v1/chat/completions",  # <- chat endpoint
-        json={
-            "model": "mistral-7b-instruct-v0.2.Q4_K_M.gguf",
-            "messages": [{"role": "user", "content": prompt}],
-            
+    # Call Replicate model
+    output = client.run(
+        "openai/gpt-4.1",  # Replace with your chosen model
+        input={
+            "input": prompt,
             "temperature": 0,
-            "do_sample": False
+            "max_output_tokens": 300
         }
     )
 
-    res_json = response.json()
-    print("Model response:", res_json)
-    try:
-        text = res_json["choices"][0]["message"]["content"]
-        
-    except (KeyError, IndexError):
-        raise ValueError(f"No content returned from model: {res_json}")
-
+    # Replicate often returns a string or list
+    text = output if isinstance(output, str) else output[0]
     text = text.strip()
 
-    # Find JSON array start
+    # Extract JSON array from model output
     try:
-        start_index = text.index('[')
-        json_string = text[start_index:]
-    except ValueError:
-        raise ValueError(f"Could not find start of JSON array in model output:\n{text}")
-
-    try:
+        start_idx = text.index("[")
+        json_string = text[start_idx:]
         priorities = json.loads(json_string)
-    except json.JSONDecodeError:
-        raise ValueError(f"Failed to parse JSON from model output:\n{json_string}")
+    except Exception as e:
+        raise ValueError(f"Failed to parse JSON from model output: {e}\nOutput was:\n{text}")
 
     return priorities
