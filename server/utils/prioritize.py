@@ -2,7 +2,7 @@ import replicate
 import json
 import os
 
-def prioritize_tasks_stream(tasks):
+def prioritize_tasks(tasks):
     # --- 1. Define Prompts (Optimized for Llama 3 Instruct) ---
     # Moved the role instructions to the dedicated system_prompt
     system_prompt = (
