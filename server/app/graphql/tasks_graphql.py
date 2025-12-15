@@ -139,7 +139,7 @@ def resolve_auto_prioritize(_, info):
     try:
         prioritized = prioritize_tasks(task_list)
     except Exception as e:
-        raise Exception(f"Error calling Mistral: {e}")
+        raise Exception(f"Error calling Model: {e}")
 
     # 4️⃣ Update tasks in DB with new priorities
     for p in prioritized:
